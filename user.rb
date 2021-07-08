@@ -1,12 +1,10 @@
 class User < Player
-
-  def add_card(player, card)
-    self.to_take_cards(card) if self.cards_player.length == 2 
-    player.add_skip_diler(card)
+  def add_card(diler, card)
+    to_take_cards(card) if cards_player.length == 2
+    diler.add_skip_diler(card)
   end
-  
+
   def skip(player, card)
     player.add_skip_diler(card)
   end
-
 end
