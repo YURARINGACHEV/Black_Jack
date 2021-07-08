@@ -12,7 +12,7 @@ card.deck_of_card
 game = Game.new
 
 loop do
-  game.begin_game(user) if card.cards.length == 16
+  game.begin_game(user) if card.cards.length == 52
 
   card.stir_the_deck
 
