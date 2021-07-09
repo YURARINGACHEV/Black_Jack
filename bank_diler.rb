@@ -1,0 +1,2 @@
+class BankDiler < Bank
+end

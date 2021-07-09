@@ -1,0 +1,3 @@
+class BankUser < Bank
+
+end
