@@ -1,183 +1,109 @@
 class Game
+  def initialize(hand_user, hand_diler, user,
+                 diler, deck, interface,
+                 bank_diler, bank_user)
 
-  def initialize( hand, user, diler,
-                  deck_of_cards, interface,
-                  bank_diler, bank_user )
-    
     @bank_diler = bank_diler
     @bank_user = bank_user
-    @hand = hand
+    @hand_user = hand_user
+    @hand_diler = hand_diler
     @diler = diler
     @user = user
-    @deck_of_cards = deck_of_cards
-    @interface = interface 
-    @pot_bet = 20
-  end
-  
-  def actions(val)
-    option = { '1' => -> { user_skip },
-               '2' => -> { user_add_cards },
-               '3' => -> { open_cards } }
-    @interface.start_game if @hand.cards_user == 3 && @hand.cards_diler == 3
-    option[val].call
-  end
-
-  def hand_card
-    @hand.cards_user = []
-    @hand.cards_diler = []
-    @hand.take_cards_diler
-    @hand.take_cards_user
-    @hand.take_cards_diler
-    @hand.take_cards_user
-  end
-
-  def show_user_card
-    @hand.cards_user
-  end
-
-  def max_card
-    @hand.cards_user.length == 3
-  end
-
-  def end_card
-    @deck_of_cards.cards.length < 6
-  end
-
-  def count_points_user
-    @hand.sum_of_points_user
-    @interface.show_points(@user, @user.points)
-  end
-
-  def count_points_diler
-    @hand.sum_of_points_diler
-    @interface.show_points(@diler, @diler.points)
-  end
-
-  def deal_cards_diler
-    @hand.take_cards_diler
-    @interface.show_card_user(@hand)
-  end
-
-  def deal_cards_user
-    @hand.take_cards_user
-    @interface.show_card_user(@hand)
+    @deck = deck
+    @interface = interface
   end
 
   def user_add_cards
-    @user.add_card(@hand, @diler)
-    @interface.show_card_user(@hand)
+    @user.add_card(@hand_user, @hand_diler, @diler, @deck)
+    @interface.show_card_user(@hand_user)
   end
 
   def user_skip
     @interface.move_diler
-    @user.skip(@hand, @diler)
-    @interface.show_card_user(@hand)
+    @user.skip(@hand_diler, @diler, @deck)
   end
 
   def open_cards
     count_points_user
     count_points_diler
-    @interface.show_card_user(@hand)
-    @interface.show_card_diler(@hand)
+    @interface.show_card_user(@hand_user)
+    @interface.show_card_diler(@hand_diler)
     game_result
   end
 
+  def actions(val)
+    option = { '1' => -> { user_skip },
+               '2' => -> { user_add_cards },
+               '3' => -> { open_cards } }
+    @interface.start_game if @hand_user.cards_player == 3 && @hand_diler.cards_player == 3
+    option[val].call
+  end
+
+  def hand_card
+    @hand_user.cards_player = []
+    @hand_diler.cards_player = []
+    @hand_user.take_cards_player(@deck)
+    @hand_user.take_cards_player(@deck)
+    @hand_diler.take_cards_player(@deck)
+    @hand_diler.take_cards_player(@deck)
+  end
+
+  def show_user_card
+    @hand_user.cards_player
+  end
+
+  def bank_diler_zero
+    @bank_diler.banks_player.zero?
+  end
+
+  def bank_user_zero
+    @bank_user.banks_player.zero?
+  end
+
+  def end_card
+    @deck.cards.length < 6
+  end
+
+  def count_points_user
+    @hand_user.sum_of_points_player
+    @interface.show_points(@user, @hand_user.points)
+  end
+
+  def count_points_diler
+    @hand_diler.sum_of_points_player
+    @interface.show_points(@diler, @hand_diler.points)
+  end
+
+  def deal_cards_diler
+    @hand.take_cards_diler
+    @interface.show_card_user(@hand_user)
+    @interface.show_card_diler(hand_diler)
+  end
+
+  def deal_cards_user
+    @hand.take_cards_user
+    @interface.show_card_user(@hand_user)
+    @interface.show_card_diler(hand_diler)
+  end
+
   def game_result
-    if @user.points == @diler.points
+    if @hand_user.points == @hand_diler.points
       @bank_diler.bank_after_draw
-      @interface.draw_intarface(@diler, @user, @bank_diler,@bank_user)
-    elsif @user.points > 21
-      @bank_diler.bank_after_win_diler
-      @interface.win_diler_interface(@diler, @user, @bank_diler, @bank_user)
-    elsif @user.points <= 21
-      if @diler.points > @user.points && @diler.points <= 21
-        @bank_diler.bank_after_win_diler
-        @interface.win_diler_interface(@diler, @user, @bank_diler, @bank_user)
-      elsif @diler.points < @user.points
-        @bank_user.bank_after_win_user
-        @interface.win_user_interface(@diler, @user, @bank_diler, @bank_user)
-      elsif @diler.points < 21
-        @bank_user.bank_after_win_user
-        @interface.win_user_interface(@diler, @user, @bank_diler, @bank_user)
+      @interface.draw_intarface(@diler, @user, @bank_diler, @bank_user, @hand_user, @hand_diler)
+    elsif @hand_user.points > 21
+      @bank_diler.bank_after_win
+      @interface.win_diler_interface(@diler, @user, @bank_diler, @bank_user, @hand_user, @hand_diler)
+    elsif @hand_user.points <= 21
+      if @hand_diler.points > @hand_user.points && @hand_diler.points <= 21
+        @bank_diler.bank_after_win
+        @interface.win_diler_interface(@diler, @user, @bank_diler, @bank_user, @hand_user, @hand_diler)
+      elsif @hand_diler.points < @hand_user.points
+        @bank_user.bank_after_win
+        @interface.win_user_interface(@diler, @user, @bank_diler, @bank_user, @hand_user, @hand_diler)
+      elsif @hand_diler.points < 21
+        @bank_user.bank_after_win
+        @interface.win_user_interface(@diler, @user, @bank_diler, @bank_user, @hand_user, @hand_diler)
       end
     end
   end
-
 end
-  # def win_pot_bet(player)
-  #   player.bank_player = player.bank_player + @pot_bet
-  # end
-
-  # def diler_win(player)
-  #   player.bank_player + @pot_bet
-  # end
-
-  # def hand_out_cards(player, card)
-  #   card.stir_the_deck
-  #   val = 2.times { player.to_take_cards(card) }
-  # end
-
-  # def options
-  #   puts 'Введите 1, если хотите пропустить ход'
-  #   puts 'Введите 2, если хотите добавить карту'
-  #   puts 'Введите 3, если хотите открыть карты'
-  #   gets.chomp
-  # end
-
-  # def option_one(user, diler, card)
-  #   puts 'Дилер сделал свой ход'
-  #   user.skip(diler, card)
-  #   puts
-  #   main_option(options, user, diler, card)
-  # end
-
-  # def option_two(user, diler, card)
-  #   user.add_card(diler, card)
-  #   puts "Добавлена новая карта #{user.cards_player[-1]}"
-  # end
-
-  # def option_three(user, diler)
-  #   user.sum_of_points
-  #   diler.sum_of_points
-  #   # puts "Карты #{user.name} #{user.cards_player}"
-  #   # puts "Карты #{diler.name} #{diler.cards_player}"
-  # end
-
-  # def main_option(val, user, diler, card)
-  #   option = { '1' => -> { option_one(user, diler, card) },
-  #              '2' => -> { option_two(user, diler, card) },
-  #              '3' => -> { option_three(user, diler) } }
-  #   option[val].call
-  # end
-
-  # def begin_game(user)
-  #   puts
-  #   puts "Приветствую #{user.name}. Предлогаю сыграть в Black Jack с компьютером(diler)"
-  #   puts 'У вас и у дилера в банке по 100 долларов'
-  #   puts 'Ставка с игрока равна 10 долларов'
-  #   puts
-  #   puts 'Если хотите сыграть нажмите enter'
-  #   puts 'Если хотите выйти нажмите 0'
-  #   exit if gets.chomp == '0'
-  # end
-
-  # def empty_deck(card)
-  #   if card.cards.length < 6
-  #     puts 'Колода закончилась '
-  #     new_game(card)
-  #   end
-  # end
-
-  # def game_over(player, card)
-  #   if player.bank_player == 0
-  #     puts "#{player.name} проиграл"
-  #     new_game(card)
-  #   end
-  # end
-
-  # def new_game(card)
-  #   puts 'Если хотите начать заново, нажмите enter'
-  #   puts 'Если хотите закончить игру нажмите 0'
-  #   gets.chomp == '0' ? exit : card.deck_of_card
-  # end
-

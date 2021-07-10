@@ -1,78 +1,31 @@
 class Hand
-  
-  attr_accessor :cards_user, :cards_diler
+  attr_accessor :cards_player, :points
 
-  def initialize(user, diler, deck_of_card)
-  	@deck_of_card = deck_of_card
-  	@user = user
-  	@diler = diler
-  	@value_cards = { '2' => 2, '3' => 3, '4' => 4,
-                     '5' => 5, '6' => 6, '7' => 7,
-                     '8' => 8, '9' => 9, '10' => 10,
-                     'J' => 10, 'Q' => 10, 'K' => 10,
-                     'A' => 11 }
-  	@cards_diler = []
-  	@cards_user = []
+  VALUE_CARDS = { '2' => 2, '3' => 3, '4' => 4,
+                  '5' => 5, '6' => 6, '7' => 7,
+                  '8' => 8, '9' => 9, '10' => 10,
+                  'J' => 10, 'Q' => 10, 'K' => 10,
+                  'A' => 11 }
+
+  def initialize
+    @cards_player = []
+    @points = 0
   end
 
-  def change_value_diler
-    @value_cards['A'] = @diler.points <= 11 ? 11 : 1
+  def change_value_player
+    VALUE_CARDS['A'] = @points <= 11 ? 11 : 1
   end
 
-  def change_value_user
-    @value_cards['A'] = @user.points <= 11 ? 11 : 1
+  def take_cards_player(deck)
+    @cards_player << deck.cards.delete(deck.cards.sample)
   end
 
-  def take_cards_diler
-    @cards_diler << @deck_of_card.cards.delete(@deck_of_card.cards.sample)
-  end 
-
-  # def take_card
-  #   @deck_of_card.cards.delete(@deck_of_card.cards.sample)
-  # end 
-
-  def take_cards_user
-    @cards_user << @deck_of_card.cards.delete(@deck_of_card.cards.sample)
-  end
-
-  def sum_of_points_user
-    @user.points = 0
-    @cards_user.each do |val|
-      @user.points += @value_cards[val[0]]
-      change_value_user
+  def sum_of_points_player
+    @points = 0
+    @cards_player.each do |val|
+      @points += VALUE_CARDS[val.value]
+      change_value_player
     end
-    @user.points
+    @points
   end
-
-  def sum_of_points_diler
-    @diler.points = 0
-    @cards_diler.each do |val|
-      @diler.points += @value_cards[val[0]]
-      change_value_diler
-    end
-    @diler.points
-  end
-  
-
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

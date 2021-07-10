@@ -1,88 +1,106 @@
 class Interface
-
-  def initialize
-  end
-  
   def interface_start_game
-    puts "нажмите enter если хотите играть"
-    puts "Нажмите 0, если хотите выйти с игры"
+    puts 'нажмите enter если хотите играть'
+    puts 'Нажмите 0, если хотите выйти с игры'
     input = gets.chomp
-    input == '0'? exit : start_game
+    input == '0' ? exit : start_game
   end
 
   def start_game(game, bank_user, bank_diler)
+    bank_user.auto_bet_player
+    bank_diler.auto_bet_player
+    puts
+    puts 'Ставки в 10 долларов сделаны'
+    puts
     options(game, bank_user, bank_diler)
   end
 
   def options(game, bank_user, bank_diler)
     loop do
-      puts "Раздача карт"
       game.hand_card
+      puts
       puts "Ваши карты #{game.show_user_card}"
-      bank_user.banks_user = bank_user.banks_user - 10
-      bank_diler.banks_diler = bank_diler.banks_diler - 10
       puts
       puts 'Введите 1, если хотите пропустить ход'
       puts 'Введите 2, если хотите добавить карту'
       puts 'Введите 3, если хотите открыть карты'
       puts
       game.actions(gets.chomp)
-      enter_masseg(game) if game.max_card
-      break if game.end_card
+      bank_user_masseg(game, bank_user) if game.bank_user_zero
+      bank_diler_masseg(game, bank_diler) if game.bank_diler_zero
+      if game.end_card
+        enter_masseg(game)
+        break
+      end
     end
   end
 
   def enter_masseg(game)
+    puts 'Закончилась калода. Игра окончена'
+    game.open_cards
+  end
+
+  def bank_user_masseg(game, bank_user)
+    puts "Вы проиграли. Счет в банке равен #{bank_user.banks_player} "
+    game.open_cards
+  end
+
+  def bank_diler_masseg(game, bank_diler)
+    puts "Diler проиграл. Счет в банке равен #{bank_diler.banks_player} "
     game.open_cards
   end
 
   def move_diler
-    puts "Дилер сделал свой ход"
+    puts
+    puts 'Дилер сделал свой ход'
     puts
   end
 
   def show_points(player, val)
+    puts
     puts "Сумма очков #{player.name} равна #{val}"
-  end
-  
-  def show_card_user(hand)
-    puts "Ваши карты #{hand.cards_user}"
+    puts
   end
 
-  def show_card_diler(hand)
-    puts "Карты дилера #{hand.cards_diler}"
+  def show_card_user(hand_user)
+    puts
+    puts "Ваши карты #{hand_user.cards_player}"
+    puts
   end
-  
-  def draw_intarface(diler, user, bank_diler, bank_user)
+
+  def show_card_diler(hand_diler)
+    puts
+    puts "Ваши карты #{hand_diler.cards_player}"
+    puts
+  end
+
+  def draw_intarface(diler, user, bank_diler, bank_user, hand_user, hand_diler)
     puts 'Ничья'
-    puts "Счет в банке #{diler.name} равен #{bank_diler.banks_user }"
-    puts "Счет в банке #{user.name} равен #{bank_user.banks_diler}"
+    puts
+    puts "Сумма очков #{user.name} #{hand_user.points}"
+    puts "Сумма очков #{diler.name} #{hand_diler.points}"
+    puts
+    puts "Счет в банке #{diler.name} равен #{bank_diler.banks_player}"
+    puts "Счет в банке #{user.name} равен #{bank_user.banks_player}"
   end
 
-  def win_diler_interface(diler, user, bank_diler, bank_user)
+  def win_diler_interface(diler, user, bank_diler, bank_user, hand_user, hand_diler)
     puts "Эту раздачу выиграл #{diler.name}"
-    puts "Счет в банке #{diler.name} равен #{bank_diler.banks_diler}"
-    puts "Счет в банке #{user.name} равен #{bank_user.banks_user}"
+    puts
+    puts "Сумма очков #{user.name} #{hand_user.points}"
+    puts "Сумма очков #{diler.name} #{hand_diler.points}"
+    puts
+    puts "Счет в банке #{diler.name} равен #{bank_diler.banks_player}"
+    puts "Счет в банке #{user.name} равен #{bank_user.banks_player}"
   end
 
-  def win_user_interface(diler, user, bank_diler, bank_user)
+  def win_user_interface(diler, user, bank_diler, bank_user, hand_user, hand_diler)
     puts "Эту раздачу выиграл #{user.name} "
-    puts "Счет в банке #{diler.name} равен #{bank_diler.banks_diler}"
-    puts "Счет в банке #{user.name} равен #{bank_user.banks_user}"
+    puts
+    puts "Сумма очков #{user.name} #{hand_user.points}"
+    puts "Сумма очков #{diler.name} #{hand_diler.points}"
+    puts
+    puts "Счет в банке #{diler.name} равен #{bank_diler.banks_player}"
+    puts "Счет в банке #{user.name} равен #{bank_user.banks_player}"
   end
-
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-

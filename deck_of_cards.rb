@@ -1,5 +1,4 @@
 class DeckOfCards
-  
   attr_accessor :cards
 
   def initialize
@@ -17,12 +16,11 @@ class DeckOfCards
   protected
 
   def deck_of_card!
-    loop do
-     card = Card.new
-     i = "#{card.value}#{card.suit}" 
-     @cards << i unless @cards.include? i
-     break if @cards.length == 52
+    Card::VALUE.each do |desk|
+      Card::SUIT.each do |suit|
+        card = Card.new(desk, suit)
+        cards << card
+      end
     end
-    @cards
   end
 end

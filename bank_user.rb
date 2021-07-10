@@ -1,3 +1,2 @@
 class BankUser < Bank
-
 end

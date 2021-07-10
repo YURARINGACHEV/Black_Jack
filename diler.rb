@@ -1,8 +1,7 @@
 class Diler < Player
+  def add_skip_diler(hand_diler, deck)
+    return if hand_diler.points >= 17
 
-  def add_skip_diler(hand)
-    return if points >= 17
-    hand.take_cards_diler if hand.cards_diler.length == 2
+    hand_diler.take_cards_player(deck) if hand_diler.cards_player.length == 2
   end
-
 end
