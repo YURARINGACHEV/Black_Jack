@@ -1,10 +1,8 @@
 class Game
   def initialize(hand_user, hand_diler, user,
-                 diler, deck, interface,
-                 bank_diler, bank_user)
+                 diler, deck, interface, bank)
 
-    @bank_diler = bank_diler
-    @bank_user = bank_user
+    @bank = bank
     @hand_user = hand_user
     @hand_diler = hand_diler
     @diler = diler
@@ -53,11 +51,11 @@ class Game
   end
 
   def bank_diler_zero
-    @bank_diler.banks_player.zero?
+    @bank.bank_diler.zero?
   end
 
   def bank_user_zero
-    @bank_user.banks_player.zero?
+    @bank.bank_user.zero?
   end
 
   def end_card
@@ -88,21 +86,22 @@ class Game
 
   def game_result
     if @hand_user.points == @hand_diler.points
-      @bank_diler.bank_after_draw
-      @interface.draw_intarface(@diler, @user, @bank_diler, @bank_user, @hand_user, @hand_diler)
+      @bank.bank_diler += 10
+      @bank.bank_user += 10
+      @interface.draw_intarface(@diler, @user, @bank, @hand_user, @hand_diler)
     elsif @hand_user.points > 21
-      @bank_diler.bank_after_win
-      @interface.win_diler_interface(@diler, @user, @bank_diler, @bank_user, @hand_user, @hand_diler)
+      @bank.bank_diler += 20
+      @interface.win_diler_interface(@diler, @user, @bank, @hand_user, @hand_diler)
     elsif @hand_user.points <= 21
       if @hand_diler.points > @hand_user.points && @hand_diler.points <= 21
-        @bank_diler.bank_after_win
-        @interface.win_diler_interface(@diler, @user, @bank_diler, @bank_user, @hand_user, @hand_diler)
+        @bank.bank_diler += 20
+        @interface.win_diler_interface(@diler, @user, @bank, @hand_user, @hand_diler)
       elsif @hand_diler.points < @hand_user.points
-        @bank_user.bank_after_win
-        @interface.win_user_interface(@diler, @user, @bank_diler, @bank_user, @hand_user, @hand_diler)
-      elsif @hand_diler.points < 21
-        @bank_user.bank_after_win
-        @interface.win_user_interface(@diler, @user, @bank_diler, @bank_user, @hand_user, @hand_diler)
+        @bank.bank_user += 20
+        @interface.win_user_interface(@diler, @user, @bank, @hand_user, @hand_diler)
+      elsif @hand_diler.points > 21
+        @bank.bank_user += 20
+        @interface.win_user_interface(@diler, @user, @bank, @hand_user, @hand_diler)
       end
     end
   end

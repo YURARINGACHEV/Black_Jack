@@ -1,2 +1,0 @@
-class BankDiler < Bank
-end

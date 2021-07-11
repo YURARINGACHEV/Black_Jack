@@ -1,19 +1,8 @@
 class Bank
-  attr_accessor :banks_player
+  attr_accessor :bank_user, :bank_diler
 
-  def initialize
-    @banks_player = 100
-  end
-
-  def auto_bet_player
-    @banks_player -= 10
-  end
-
-  def bank_after_win
-    @banks_player += 20
-  end
-
-  def bank_after_draw
-    @banks_player += 10
+  def initialize(bank_user, bank_diler)
+    @bank_user = bank_user
+    @bank_diler = bank_diler
   end
 end
